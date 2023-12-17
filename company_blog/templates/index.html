@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <header id="page-header">
+        <div class="container my-3 bg-light">
+            <div class="row">
+                <div class="col-md-6 m-auto text-center">
+                    {% if blog_category %}  <!-- カテゴリのデータを受け取っているか確認(カテゴリ検索) -->
+                        <h1 class="fst-italic">{{ blog_category.category }}</h1>
+                        <br>
+                    {% elif user %}   <!-- ユーザーを受け取っているか確認 -->
+                        <h1 class="fst-italic">{{ user.username }}</h1>
+                        <br>
+                    {% elif search_text %}    <!-- search_textがあるか確認 -->
+                        <h1 class="fst-italic">"{{ search_text }}"の検索結果</h1>
+                        <br>
+                    {% else %}
+                        <h1 class="fst-italic">LYS LLC. Blog</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, voluptate.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ページ詳細(2カラム：左にコンテンツ/右にサイドバーの構成) -->
+    <div class="container my-3">
+        <div class="row mb-2">
+            <!-- 左:コンテンツ -->
+            <div class="col-md-8">     <!-- 画面幅関係なくグリッド8列分表示するからcol-8になる(サイドバーはcol-md-4) -->
+                <!-- ブログ投稿 -->
+                <section id="blog_post">
+                    <div class="row">
+                        {% for post in blog_posts.items %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">    <!-- h-100=カードの高さを同じにする -->
+                                <div class="card-body" style="max-height: 26rem;">
+                                    {% if post.featured_image %}    <!-- アイキャッチ画像があればimg表示 -->
+                                    <div class="mb-3" style="text-align: center;">
+                                        <img src="{{ url_for('static', filename='featuring_image/' + post.featured_image) }}" class="img-fluid card-img-top" style="max-height: 10rem;">
+                                    </div>
+                                    {% endif %}
+                                    <h3>
+                                        <a href="{{ url_for('main.blog_post', blog_post_id=post.id) }}" class="card-title text-decoration-none">
+                                            <span class="fst-italic">{{ post.title | truncate(14) }}</span> <!-- truncate(14)=表示する文字数指定 -->
+                                        </a>
+                                    </h3>
+                                    <p>{{ post.date.strftime('%Y-%m-%d') }} by: {{ post.author.username | truncate(10) }}</p>
+                                    <p class="card-text">{{ post.summary | truncate(40) }}</p>
+                                    <a href="{{ url_for('main.blog_post', blog_post_id=post.id) }}" class="btn btn-dark">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+
+            <!-- サイドバー -->
+            <div class="col-md-4">
+                <div class="position-sticky" style="top: 2rem;">    <!-- 位置を固定する -->
+                    <!-- 検索欄 -->
+                    <div class="container-fluid mb-3">      <!-- 「-fluid」を付けることでレスポンシブ対応 -->
+                        <form action="{{ url_for('main.search') }}" class="d-flex" method="post">    <!-- d-flex=検索boxと検索ボタンを横並びに整列させる(Bootstrap) -->
+                            {{ form.hidden_tag() }}
+                            {{ render_field(form.search_text, class="form-control me-2", placeholder="検索するテキストを入力") }}
+                            {{ form.submit(class="btn btn-outline-success") }}
+                            <!-- <input type="text" class="form-control me-2" placeholder="検索するテキストを入力">
+                            <button type="submit" class="btn btn-outline-success">検索</button> -->
+                        </form>
+                    </div>
+                    <!-- 会社情報 -->
+                    <div class="p-4 mb-2 bg-light">
+                        <h4 class="fst-italic">会社情報</h4>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus blanditiis suscipit vel rem cum quaerat possimus sunt nesciunt debitis corporis.</p>
+                    </div>
+                    <!-- 最新記事 -->
+                    <div class="p-4">
+                        <h4 class="fst-italic">RECENT POST <span class="ms-2 fs-6">最新記事</span></h4> <!-- fs-6=フォントサイズ(1～6) -->
+                        <hr>
+                        <ol class="list-unstyled">
+                            {% for recent_post in recent_blog_posts %}
+                            <li>
+                                <a href="{{ url_for('main.blog_post', blog_post_id=recent_post.id) }}" class="text-decoration-none">   <!-- text-decoration-none=リンクに自動的につく下線を消す -->
+                                    {% if recent_post.featured_image %}
+                                    <img src="{{ url_for('static', filename='featuring_image/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">  <!-- アイキャッチ画像をサイズ指定して表示 -->
+                                    {% endif %}
+                                    <span class="ms-2">{{ recent_post.title | truncate(14) }}</span>
+                                </a>
+                            </li>
+                            <hr>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                    <!-- カテゴリ一覧 -->
+                    <div class="p-4">
+                        <h4 class="fst-italic">CATEGORY <span class="ms-2 fs-6">カテゴリ一覧</span></h4> <!-- fs-6=フォントサイズ(1～6) -->
+                        <hr>
+                        <ol class="list-unstyled">
+                            {% for blog_category in blog_categories %}
+                            <li>
+                                <a href="{{ url_for('main.category_posts', blog_category_id=blog_category.id) }}" class="text-decoration-none">   <!-- text-decoration-none=リンクに自動的につく下線を消す -->
+                                    <span class="ms-2">{{ blog_category.category | truncate(20) }}</span>
+                                </a>
+                            </li>
+                            <hr>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <nav class="my-2" aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <!-- 【例】全体7ページで現在のページが4の場合の表示(「1,None,3,4,5,None,7」が返ってくる)= 前へ | 1 | … | 3 | 4 | 5 | … | 7 | 次へ -->
+                    <li {% if blog_posts.has_prev %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if blog_posts.has_prev %}{{ url_for('main.index', page=blog_posts.prev_num) }}{% else %}#{% endif %}">前へ</a></li>
+                    <!-- <li>users(ページネーションオブジェクト).has_prev(属性)=前のページがあればpage-itemで表示、なければpage-item disabledで無効化 -->
+                    <!-- <a href>前のページがあればuser_maintenancceページへ飛ぶ(page=users.prev_numで前のページ番号を渡す)、なければ無効化されているためリンク不要 -->
+                    
+                    {% for page_num in blog_posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                    <!-- ページネーションオブジェクトのメソッド：iter_pagesからページ番号を取得しpage_numへ格納する -->
+                    <!-- iter_pages(引数)=ページネーションオブジェクトのメソッド:ページネーションに表示するページ番号を返す -->
+                    <!-- users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) -->
+                    <!-- left_edge=左端に表示するページ数/right_edge=右端に表示するページ数/
+                        left_current=現在のページを起点として左に表示するページ数/right_current=現在のページを起点として右に表示するページ数
+                        ※currentはいずれも現在のページは含めない -->
+                        {% if page_num %}
+                        <!-- page_numに数字が格納されているか確認 -->
+                            {% if blog_posts.page == page_num %}
+                            <!-- ループで取得したページが現在のページと同じか確認※users.page=現在のページ -->
+                                <li class="page-item disabled"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                <!-- 現在のページと同じであればdisabledで無効化して現在のページ番号を表示(リンクは不要のため#) -->
+                            {% else %}
+                            <!-- 現在のページと異なればページ番号を表示 -->
+                                <li class="page-item"><a class="page-link" href="{{ url_for('main.index', page=page_num)}}">{{ page_num }}</a></li>
+                                <!-- 有効化してユーザー管理ページのURLを設定(ページ数は変数：page_numを指定) -->
+                            {% endif %}
+                        {% else %}
+                        <!-- ページ番号に[None]が格納されている場合「…」を表示 -->
+                            <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
+                            <!-- 「…」は特殊文字になるため「…」を表す[&hellip;]を記述する -->
+                        {% endif %}
+                    {% endfor %}
+        
+                    <li {% if blog_posts.has_next %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if blog_posts.has_next %}{{ url_for('main.index', page=blog_posts.next_num) }}{% else %}#{% endif %}">次へ</a></li>
+                    <!-- <li class="page-item"><a class="page-link" href="#">前へ</a></li>
+                    <li class="page-item"><a class="page-link" href="#">ページNo.</a></li>
+                    <li class="page-item"><a class="page-link" href="#">次へ</a></li> -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+{% endblock %}

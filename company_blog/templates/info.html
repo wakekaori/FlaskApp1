@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <header id="page-header">
+        <div class="container my-3 bg-light">
+            <div class="row">
+                <div class="col-md-6 m-auto text-center">
+                    <h1>会社情報</h1>
+                    <p>どのような会社かを簡単に説明。どのような会社かを簡単に説明。</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="about">
+        <div class="container py-3">
+            <div class="row">
+                <!-- ページの左側の会社情報 -->
+                <div class="col-md-6">
+                    <h2>提供サービス</h2>
+                    <h3 class="fst-italic">サービス1</h3>
+                    <p>サービス内容の説明</p>
+                    <br>
+                    <h3 class="fst-italic">サービス2</h3>
+                    <p>サービス内容の説明</p>
+                    <br>
+                    <h3 class="fst-italic">サービス3</h3>
+                    <p>サービス内容の説明</p>
+                </div>
+                <!-- ページの右側の写真部分 -->
+                <div class="col-md-6">
+                    <img src="https://images.unsplash.com/photo-1577415124269-fc1140a69e91?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=700&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY4MTQ0MDIwNg&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=700" alt="" class="rounded-circle img-fluid d-none d-md-block">
+                    <!-- classに[d-none d-md-block]を記述することで画面領域が狭くなると非表示にできる(Bootstrap>Utilities>Display>HidingElement) -->
+                    <!-- [d-md-none]を記述するとmdのサイズになるまで非表示になる -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="company-info">
+        <div class="container py-3 bg-dark text-light">
+            <h2>会社概要</h2>
+            <p>社名: LYS</p>
+            <p>設立: 1990 年 8 月 11 日</p>
+            <p>資本金: 3億円</p>
+            <p>本社: 〒999-9999 福岡県本社住所</p>
+            <p>TEL: 092-789-4567</p>
+            <p>従業員: 6名</p>
+        </div>
+    </section>
+{% endblock %}

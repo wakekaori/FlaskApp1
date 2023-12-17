@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <link rel="icon" href="/static/favicon32.ico" type="image/x-icon">
+    <title>LYS</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" data-bs-theme="dark">
+        <div class="container">
+          <a class="navbar-brand fst-italic" href="{{url_for('main.index')}}">LYS</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- <ul class="navbar-nav me-auto mb-2 mb-lg-0"> -->
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'main.index' %} active{% endif %}" href="{{url_for('main.index')}}">ホーム</a>
+                <!-- if request.endpoint == 'main.index'=現在開いているページのnavbarをハイライト -->
+                <!-- サーバーに送信されてくるrequestの宛先(=endpoint)が指定のview関数(=main.index)と一致すれば(=現在開いているページなら)ハイライト -->
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'main.info' %} active{% endif %}" href="{{url_for('main.info')}}">会社情報</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'main.inquiry' %} active{% endif %}" href="{{url_for('main.inquiry')}}">お問い合わせ</a>
+              </li>
+              <!-- <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled">Disabled</a>
+              </li> -->
+            </ul>
+            <br>
+
+            <!-- <ul class="navbar-nav mb-2 mb-lg-0 d-flex"> -->
+            <ul class="navbar-nav ms-auto">
+              <!-- ログイン状態に合わせた表示するための処理 -->
+              {% if current_user.is_authenticated %}  <!-- 現在のユーザーがログインしているか確認(ログインしている場合のみログアウトとユーザー名を表示する) -->
+              <!-- [current_user]現在のユーザーが保持される/[is_authenticated]ログインしているかどうかが確認できる(UserモデルでUserMixinクラスを継承したため使える) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.blog_maintenance' %} active{% endif %}" href="{{url_for('main.blog_maintenance')}}">ブログ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.category_maintenance' %} active{% endif %}" href="{{url_for('main.category_maintenance')}}">カテゴリ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.inquiry_maintenance' %} active{% endif %}" href="{{url_for('main.inquiry_maintenance')}}">お問い合わせ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'users.user_maintenance' %} active{% endif %}" href="{{url_for('users.user_maintenance')}}">ユーザー</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('users.logout') }}">ログアウト</a>
+                </li>
+                <span class="navbar-text ms-3">
+                    {{ current_user.username | truncate(10) }} <!-- ログインしたユーザー名を表示 -->
+                </span>
+              {% endif %}
+                <!-- <li class="nav-item">
+                    <a class="nav-link">ユーザー名</a>
+                </li> -->
+            </ul>
+            <!-- <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form> -->
+
+          </div>
+        </div>
+      </nav>
+
+      {% from "_formhelpers.html" import render_field %}  <!-- マクロの読み込み(記述場所は使用する上あたり) -->
+      <!-- baseに記述することで継承したすべてのテンプレートでマクロが使用可能になる -->
+
+      <div class="container" style="padding-top: 4rem; padding-bottom: 4rem;">
+          {% for message in get_flashed_messages() %}
+          <!-- app.pyのflash関数で出力したメッセージは[get_flashed_messages()]で取得する -->
+          <!-- 複数のメッセージが格納されるケースがあるためfor分で1つずつ取り出して表示する -->
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              {{message}} <!-- for文で取り出したメッセージを表示 -->
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+
+          {% block content %}
+
+          {% endblock %}
+      </div>
+</body>
+<footer id="fotter" class="fotter text-center pt-2 bg-dark fixed-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col text-white">
+                <p>Copyright @ 2023 LYS</p>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

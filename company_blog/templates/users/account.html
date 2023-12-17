@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+    {% if current_user.is_administrator() %}    <!-- 現在のユーザーが管理者の場合だけ削除ボタンを表示 -->
+    <div class="container my-3 py-4 bg-light">
+        <div class="row">
+            <div class="col-md-3">
+                <button type="button"class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#del_modal">
+                    削除
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <section id="user_update">
+        <div class="container my-3">
+            <div class="row">
+                <div class="col-lg-4 mx-auto">
+                    <div class="card bg-success text-center">
+                        <div class="card-body text-light">
+                            <h3>ユーザー更新</h3>
+                            <p>ユーザー情報を更新してください</p>
+                            <form method="post">
+                                {{ form.hidden_tag() }}
+                                {{ render_field(form.username, placeholder="ユーザー名", class="form-control form-control-lg mb-3") }}
+                                {{ render_field(form.email, placeholder="メールアドレス", class="form-control form-control-lg mb-3") }}
+                                <!-- <input type="text" class="form-control form-control-lg mb-3" placeholder="ユーザー名">
+                                <input type="email" class="form-control form-control-lg mb-3" placeholder="メールアドレス"> -->
+                                <hr>
+                                {{ render_field(form.password, placeholder="新パスワード", class="form-control form-control-lg mb-3") }}
+                                {{ render_field(form.pass_confirm, placeholder="新パスワード(確認)", class="form-control form-control-lg mb-3") }}
+                                {{ form.submit(class="btn btn-outline-light w-100", value="更新") }}
+                                <!-- <input type="password" class="form-control form-control-lg mb-3" placeholder="新パスワード">
+                                <input type="password" class="form-control form-control-lg mb-3" placeholder="新パスワード(確認)">
+                                <button type="button" class="btn btn-outline-light w-100">更新</button> -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade text-start text-dark" id="del_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">削除確認</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    このユーザーを削除しますか？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <!-- Blueprint名.delete_user関数を呼び出し(フォームに格納しているユーザーidを関数に渡す) --> 
+                    <form action="{{ url_for('users.delete_user', user_id=form.id) }}" method="POST">
+                        <input type="submit" class="btn btn-danger" value="削除">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

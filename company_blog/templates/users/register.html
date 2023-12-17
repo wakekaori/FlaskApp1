@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content%}
+
+    <section id="user_register">
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-lg-4 mx-auto">
+                    <div class="card bg-primary text-center">
+                        <div class="card-body text-light">
+                            <h3>ユーザー登録</h3>
+                            <p>ユーザー情報を入力してください</p>
+                            <form method="POST">
+                                {{ form.hidden_tag() }} <!-- flask_wtfでセキュリティ(CSRF)対策を行うために必要 -->
+                                <!-- トークンを利用して正しいリクエストを識別する -->
+                                <!-- 【トークンの実装方法】 -->
+                                <!-- 1.ブラウザからリクエストがあったら -->
+                                <!-- 2.Webアプリ側でトークン(ランダムな文字列)を生成し保存する(トークンの生成に使われるのが秘密鍵になる) -->
+                                <!-- 3.生成したトークンをHTMLにhiddenで埋め込みブラウザに送信する -->
+                                <!-- 4.ブラウザで入力した情報とトークンを合わせてWebアプリに送信する -->
+                                <!-- 5.リクエストを受け取るWebアプリ側では2で保存したトークンと送信されたトークンが一致するか確認する -->
+                                <!-- トークンが一致すれば通常の処理を行い、一致しなければ不正なリクエストとして扱う -->
+                                <!-- ブラウザの更新するたびにトークンは変更される -->
+                                <!-- ↑とapp.pyの「app.config['SECRET_KEY'] = 'mysecretkey'」を記述することで実装できる -->
+                                <!-- ↓↓↓app.pyのrender_templateの引数で定義したformのクラスの変数名でラベルと入力フィールドを設定 -->
+                                <!-- {{ form.username.label }} {{ form.username()}} -->  <!-- [引数名.クラスの変数名.label] [引数名.クラスの変数名()] -->
+                                {{ render_field(form.username, placeholder="ユーザー名", class="form-control form-control-lg mb-3") }} <!-- マクロ名(フィールド名, 必要に応じて引数2) -->
+                                <!-- 複数の引数を渡してもhelperで「**kwargs」としているため受け取り可能(Bootstrapで使用するclass属性の引数などもOK) -->
+                                <!--  form.username.label  render_field(form.username)  --> <!-- ラベルを付ける場合は←でもOK -->
+                                <!-- {{ form.email.label }} {{ form.email() }} -->
+                                {{ render_field(form.email, placeholder="メールアドレス", class="form-control form-control-lg mb-3") }}
+                                <!-- {{ form.password.label }} {{ form.password() }} -->
+                                {{ render_field(form.password, placeholder="パスワード", class="form-control form-control-lg mb-3") }}
+                                <!-- {{ form.pass_confirm.label }} {{ form.pass_confirm() }} -->
+                                {{ render_field(form.pass_confirm, placeholder="パスワード(確認用)", class="form-control form-control-lg mb-3") }}
+                                {{ form.submit(class="btn btn-outline-light w-100") }} <!-- buttonはラベル不要のため[引数名.クラスの変数名()]のみ記述 -->
+
+                                <!-- <input type="text" class="form-control form-control-lg mb-3" placeholder="ユーザー名">
+                                <input type="email" class="form-control form-control-lg mb-3" placeholder="メールアドレス">
+                                <input type="password" class="form-control form-control-lg mb-3" placeholder="パスワード">
+                                <input type="password" class="form-control form-control-lg mb-3" placeholder="パスワード(確認)">
+                                <button type="button" class="btn btn-outline-light w-100">登録</button> -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

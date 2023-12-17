@@ -1,0 +1,24 @@
+<!-- ページ無しエラーページ -->
+{% extends "base.html" %}
+
+{% block content %}
+
+<section id="menu">
+    <div class="container my-3 py-3 bg-right">
+        <div class="row">
+            <div class="col-md-3">
+                <a class="btn btn-secondary w-100" href="{{url_for('main.index')}}">メインページへ戻る</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<header id="page-header">
+    <div class="container my-3 py-3 bg-right">
+        <h1>ページが見つかりません</h1>
+        <p>アクセスしたページが見つかりませんでした<br>
+        削除されたかアドレスが間違っています</p>
+    </div>
+</header>
+
+{% endblock %}

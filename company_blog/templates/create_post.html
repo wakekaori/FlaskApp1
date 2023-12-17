@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+    <section id="blog_post">
+        <div class="container my-3">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>ブログ投稿</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                            <!-- enctype="multipart/form-data"←これで複数種類(textや画像の混合)のデータ送信ができる -->
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    {{ form.title.label(class="form-control-label") }}  <!-- BlogPostFormクラス属性の値を渡す -->
+                                    {{ render_field(form.title, class="form-control") }}
+                                    <!-- <label class="form-control-label">タイトル</label>
+                                    <input type="text" class="form-control"> -->
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.category.label(class="form-control-label") }}
+                                    {{ render_field(form.category, class="form-control") }}
+                                    <!-- htmlではclassにform-selectを設定しているが、SelectFieldの定義はBlogPostFormクラスで行っているためここでは記述不要 -->
+                                    <!-- <label class="form-control-label">カテゴリ</label>
+                                    <select class="form-select">
+                                        <option value="1">カテゴリ1</option>
+                                        <option value="2">カテゴリ2</option>
+                                        <option value="3">カテゴリ3</option>
+                                    </select> -->
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.summary.label(class="form-control-label") }}
+                                    {{ render_field(form.summary, class="form-control") }}
+                                    <!-- <label class="form-control-label">要約</label>
+                                    <input type="text" class="form-control"> -->
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.text.label(class="form-control-label") }}
+                                    {{ render_field(form.text, class="form-control form-control-lg") }} <!-- name="text"は自然につくため不要 -->
+                                    <!-- <label class="form-control-label">本文</label>
+                                    <textarea class="form-control form-control-lg" name="text"></textarea> -->
+                                    <script>
+                                        CKEDITOR.replace( 'text' );
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.picture.label(class="form-control-label") }}
+                                    <!-- <label class="form-control-label">アイキャッチ画像</label> -->
+                                    <br>
+                                    {% if form.picture.data %}  <!-- 画像データが選択されているか判断し、選択されていれば画像表示 -->
+                                        <div style="text-align: left;">
+                                            <img src="{{ url_for('static', filename='featuring_image/' + form.picture.data) }}">
+                                            <!-- staticフォルダ>featured_imageフォルダ>選択した画像のファイル名にリンク -->
+                                        </div>
+                                    {% endif %}
+                                    <br>
+                                    {{ render_field(form.picture, class="form-control-file") }}
+                                    <!-- <input type="file" class="form-control-file"> -->
+                                </div>
+                                <div class="container mb-3">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            {{ form.submit(class="btn btn-success w-100") }}
+                                            <!-- <button type="submit" class="btn btn-success w-100">投稿</button> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

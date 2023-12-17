@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container my-3 py-3 bg-light">
+        <div class="row">
+            <div class="col-md-6 m-auto text-center">
+                <h1>ブログ管理</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-3 py-3 bg-light">
+        <div class="row">
+            <div class="col-md-3">
+                <a href="{{ url_for('main.create_post') }}" class="btn btn-success w-100">ブログ作成</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-3">
+        <div class="row">
+            <div class="card">  <!-- col-md-9 -->
+                <div class="card-header">
+                    <h4>最新の投稿</h4>
+                </div>
+                <div class="table-responsive">  <!-- tableタグをtable-responsiveで囲むと水平方向のスクロールができる -->
+                    <table class="table table-striped text-nowrap"> <!-- tableタグにtext-nowrapを付けると折り返しを抑止する(Utilities>Text) -->
+                        <thead class="table-dark">
+                            <tr>
+                            <th>#</th>
+                            <th>タイトル</th>
+                            <th>作成日</th>
+                            <th>著者</th>
+                            <th>詳細</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in blog_posts.items %}
+                            <tr>
+                                <td>{{ post.id }}</td>
+                                <td>{{ post.title | truncate(20) }}</td>
+                                <td>{{ post.date.strftime('%Y-%m-%d') }}</td>   <!-- strftime=format的なもの(←はyyyy-mm-dd) -->
+                                <td>{{ post.author.username | truncate(10) }}</td> <!-- リレーションでつないでいるためauthorでusernameを表示可能 -->
+                                <td><a href="{{ url_for('main.blog_post', blog_post_id=post.id) }}" class="btn btn-secondary">詳細</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="my-2" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- 【例】全体7ページで現在のページが4の場合の表示(「1,None,3,4,5,None,7」が返ってくる)= 前へ | 1 | … | 3 | 4 | 5 | … | 7 | 次へ -->
+            <li {% if blog_posts.has_prev %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if blog_posts.has_prev %}{{ url_for('main.blog_maintenance', page=blog_posts.prev_num) }}{% else %}#{% endif %}">前へ</a></li>
+            <!-- <li>users(ページネーションオブジェクト).has_prev(属性)=前のページがあればpage-itemで表示、なければpage-item disabledで無効化 -->
+            <!-- <a href>前のページがあればuser_maintenancceページへ飛ぶ(page=users.prev_numで前のページ番号を渡す)、なければ無効化されているためリンク不要 -->
+            
+            {% for page_num in blog_posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+            <!-- ページネーションオブジェクトのメソッド：iter_pagesからページ番号を取得しpage_numへ格納する -->
+            <!-- iter_pages(引数)=ページネーションオブジェクトのメソッド:ページネーションに表示するページ番号を返す -->
+            <!-- users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) -->
+            <!-- left_edge=左端に表示するページ数/right_edge=右端に表示するページ数/
+                left_current=現在のページを起点として左に表示するページ数/right_current=現在のページを起点として右に表示するページ数
+                ※currentはいずれも現在のページは含めない -->
+                {% if page_num %}
+                <!-- page_numに数字が格納されているか確認 -->
+                    {% if blog_posts.page == page_num %}
+                    <!-- ループで取得したページが現在のページと同じか確認※users.page=現在のページ -->
+                        <li class="page-item disabled"><a class="page-link" href="#">{{ page_num }}</a></li>
+                        <!-- 現在のページと同じであればdisabledで無効化して現在のページ番号を表示(リンクは不要のため#) -->
+                    {% else %}
+                    <!-- 現在のページと異なればページ番号を表示 -->
+                        <li class="page-item"><a class="page-link" href="{{ url_for('main.blog_maintenance', page=page_num)}}">{{ page_num }}</a></li>
+                        <!-- 有効化してユーザー管理ページのURLを設定(ページ数は変数：page_numを指定) -->
+                    {% endif %}
+                {% else %}
+                <!-- ページ番号に[None]が格納されている場合「…」を表示 -->
+                    <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
+                    <!-- 「…」は特殊文字になるため「…」を表す[&hellip;]を記述する -->
+                {% endif %}
+            {% endfor %}
+
+            <li {% if blog_posts.has_next %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if blog_posts.has_next %}{{ url_for('main.blog_maintenance', page=blog_posts.next_num) }}{% else %}#{% endif %}">次へ</a></li>
+            <!-- <li class="page-item"><a class="page-link" href="#">前へ</a></li>
+            <li class="page-item"><a class="page-link" href="#">ページNo.</a></li>
+            <li class="page-item"><a class="page-link" href="#">次へ</a></li> -->
+        </ul>
+    </nav>
+{% endblock %}
